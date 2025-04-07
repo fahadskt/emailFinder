@@ -1,76 +1,125 @@
-# emailFinder - Email Extraction Tool
-emailFinder is a Python-based web scraping tool designed to extract email addresses from websites or multiple URLs listed in a file. 
+# 📧 EmailFinder
 
-This email scraper crawls through website pages, parses content, and efficiently extracts email addresses.
+![License](https://img.shields.io/badge/license-GPLv3-blue)
+![Python](https://img.shields.io/badge/python-3.x-green)
 
-## Features
-- Automatically crawls through all page routes.
-- Finds and displays email addresses.
-- Input URLs directly or through a text file.
+> A powerful email extraction tool that crawls websites to discover email addresses efficiently.
 
-## Prerequisites
-- Python 3.x installed on your machine.
-- Venv (Virtual environment support).
+<p align="center">
+  <img src="demo.gif" alt="EmailFinder Demo" width="700">
+</p>
 
-  
-## How to Install and Run
+## ✨ Features
 
-Follow these simple steps to clone the repository, install dependencies, and run the tool:
+- 🔍 **Automatic Crawling**: Traverses all page routes within the same domain
+- 📋 **Batch Processing**: Process multiple URLs from a text file
+- 🧠 **Smart Detection**: Uses advanced regex patterns to identify valid emails
+- 🚀 **Multithreaded**: Efficiently processes multiple websites concurrently
+- 💻 **User-Friendly**: Simple command-line interface with progress indication
 
-### Clone the repository
-```
-git clone git@github.com:AyraStelmaszewski/emailFinder.git
-```
+## 📋 Prerequisites
 
-### Navigate to the project directory
-```
+- Python 3.x
+- Virtual environment (recommended)
+
+## 🚀 Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/AyraStelmaszewski/emailFinder.git
+
+# Navigate to the project directory
 cd emailFinder
-```
 
-### Set up a virtual environment
-
-```
+# Set up a virtual environment
 python3 -m venv venv
-```
 
-### Activate the virtual environment
-```
+# Activate the virtual environment
+# On Linux/macOS:
 source venv/bin/activate
+# On Windows:
+# venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
 ```
 
-### Install dependencies
+## 💻 Usage
+
+### Processing a single URL
+
+```bash
+python emailFinder.py example.com
 ```
-pip install -r requirements
+
+### Processing multiple URLs from a file
+
+```bash
+python emailFinder.py urls.txt
 ```
-### Run the email extraction tool
+
+### Example file format (urls.txt)
+
 ```
-python3 emailFinder.py urls.txt 
+example.com
+another-website.com
+third-example.net
 ```
 
+## 🔍 How It Works
 
-## Usage Example
-To extract emails from a website or multiple URLs:
+1. The tool parses the input (single URL or file with URLs)
+2. For each URL, it discovers all internal links within the same domain
+3. It crawls each discovered page, searching for email patterns
+4. Valid emails are extracted, filtered, and displayed in the terminal
 
-- Add URLs to a file.
-- Run the tool as shown in the above command.
+## 📊 Output Example
 
+```
+==============================================
+ - Took 1m45s to find 24 emails from urls.txt
+ - All collected emails:
+==============================================
+contact@example.com
+support@website.com
+info@company.org
+sales@business.net
+...
+```
 
-This tool will scan all routes of the URLs provided and extract all email addresses found.
+## ⚙️ Configuration
 
-## Contribution
-Contributions, issues, and feature requests are welcome! Feel free to check out the issues page.
+The tool uses sensible defaults, but you can modify these variables in the code:
 
-## License
-This project is licensed under the GLPv3 License.
+- `emailReg`: The primary regex pattern for email detection
+- `secondReg`: The secondary filter regex to avoid invalid matches
+- Thread pool settings for performance tuning
 
-## Disclaimer
-There is no filter on type of emails collected. 
-Business email addresses is considered personal data if they are associated with an individual (e.g. alice.doe@example), but generic email addresses are fine (e.g. sales@example).
+## ⚠️ Legal Disclaimer
 
-## Demo 
-![alt text](https://github.com/past3ll3/emailFinder/blob/main/demo.gif)
-![image](https://github.com/user-attachments/assets/73892d0c-7f4b-4d2f-8454-1f96151215a9)
-![image](https://github.com/user-attachments/assets/6db660e4-8930-44a4-a1ee-42a37d8da15e)
-![image](https://github.com/user-attachments/assets/cc790f66-12e9-4459-84e7-68530da62553)
-![image](https://github.com/user-attachments/assets/fd9b3c3f-17fa-436d-8843-0a4099d0f81f)
+**Important:** Email scraping may be subject to legal restrictions:
+
+- This tool is provided for educational purposes only
+- Business email addresses associated with individuals (e.g., john.doe@company.com) may be considered personal data under privacy laws like GDPR
+- Always ensure you have proper authorization before scraping websites
+- The authors assume no liability for misuse of this tool
+
+## 🤝 Contributing
+
+Contributions are welcome! Feel free to:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📜 License
+
+This project is licensed under the GNU General Public License v3.0 - see the LICENSE file for details.
+
+## 🔗 Links
+
+- [Project Repository](https://github.com/AyraStelmaszewski/emailFinder)
+- [Report Issues](https://github.com/AyraStelmaszewski/emailFinder/issues)
 

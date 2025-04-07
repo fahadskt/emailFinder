@@ -11,6 +11,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import time
 import itertools
 import threading
+from random import uniform
 
 emailReg = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
 secondReg = r'^(?!.*\.(png|jpg|jpeg|gif|php|js|css|html|mp4)$)(?=.{2,25}@)(?!.*@.*@)(?!.*\..*\..*\.)(?!.*@.{1,1}\.)(?!.*@.{26,}@).+@[^.]+?\.[^.]+$'
@@ -59,21 +60,18 @@ def checkIfSameDomain(base_url, target_url):
 #search routes in url based on href(could be better?)
 def getHrefRoutes(url):
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=10, 
+                              headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'})
         response.raise_for_status()
 
         soup = BeautifulSoup(response.text, 'html.parser')
-
-        base_domain = urlparse(url).netloc
+        base_domain = urlparse(url).netloc.replace('www.', '')
 
         routes = []
         for a_tag in soup.find_all('a', href=True):
             href = a_tag['href']
-            
             full_url = urljoin(url, href)
-            
-            link_domain = urlparse(full_url).netloc
-            link_domain = link_domain.replace("www.", "")
+            link_domain = urlparse(full_url).netloc.replace('www.', '')
 
             if link_domain == base_domain:
                 routes.append(href)
@@ -81,12 +79,15 @@ def getHrefRoutes(url):
         return routes
 
     except requests.exceptions.RequestException as e:
+        print(f"\n - [{color[2]}error{color[3]}] Failed to access {url}: {str(e)}")
         return []
 
 #scrap emails with regex 
 def findEmails(url):
     try:
-        response = requests.get(url)
+        time.sleep(uniform(0.5, 1.5))  # Random delay between requests
+        response = requests.get(url, timeout=10,
+                              headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'})
         response.raise_for_status()
     except requests.exceptions.RequestException as x:
         return
@@ -110,13 +111,20 @@ def findEmails(url):
             if re.match(secondReg, email):
                 allEmails.append(email)
 
+# Add this function near the top with other utility functions
+def ensure_protocol(url):
+    if not url.startswith(('http://', 'https://')):
+        return f'https://{url}'
+    return url
+
 #url process
 def processUrl(url):
+    url = ensure_protocol(url.strip())  # Add protocol and remove whitespace
     routes = getHrefRoutes(url)
-
+    
     if routes:
         urls_to_scan = [urljoin(url, route) for route in routes]
-        with ThreadPoolExecutor(max_workers=500) as executor:
+        with ThreadPoolExecutor(max_workers=10) as executor:
             futures = [executor.submit(findEmails, full_url) for full_url in urls_to_scan]
             for future in as_completed(futures):
                 future.result()
@@ -131,7 +139,7 @@ def processUrlsFromFile(file_path):
     with open(file_path, 'r') as f:
         urls = f.read().splitlines()
 
-    with ThreadPoolExecutor(max_workers=500) as executor:
+    with ThreadPoolExecutor(max_workers=5) as executor:
         futures = [executor.submit(processUrl, url) for url in urls if url.strip()]
         for future in as_completed(futures):
             future.result()
